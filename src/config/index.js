@@ -14,6 +14,6 @@ export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
 
 export const auth = {
-  cookies: { secret: process.env.COOKIE_SECRET || 'Cookies' },
-  jwt: { secret: process.env.JWT_SECRET || 'Conversations' },
+  cookies: { secret: process.env.COOKIE_SECRET || 'fc5jw-svdn(m*u!n0p9@matsaele@3in%-%m7=n=s=6vh(#35n' },
+  jwt: { secret: process.env.JWT_SECRET || 'q=7#7qp8+_p4g567qhe4l42!-hui-18$lklgw1^tcf#99kr6j@' },
 };

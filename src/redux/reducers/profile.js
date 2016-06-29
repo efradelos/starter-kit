@@ -6,8 +6,6 @@ import { browserHistory } from 'react-router';
 export default (state = { email: 'efradelos' }, action) => {
   switch (action.type) {
     case LOGIN_SUCCESS:
-      // TODO: Better cookie handling
-      Cookies.set('token', action.payload.token);
       browserHistory.push('/');
       return Object.assign({ }, state, action.payload);
     case LOGIN_FAIL:

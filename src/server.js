@@ -6,10 +6,10 @@ import PrettyError from 'pretty-error';
 import path from 'path';
 import ReactDOM from 'react-dom/server';
 
-import jwt from './config/jwt';
+import { cookieJwt, headerJwt } from './config/jwt';
 import assets from './assets'; // eslint-disable-line import/no-unresolved
 import asyncRouterMatch from './lib/asyncRouterMatch';
-import { port, host } from './config';
+import { port, host, auth } from './config';
 import configureStore from './redux/store/configureStore';
 
 const app = express();
@@ -17,23 +17,24 @@ const server = http.createServer(app);
 const store = configureStore();
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser());
+// TODO: Add a cookie secret
+app.use(cookieParser(auth.cookies.secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(jwt.unless({ path: ['/login'] }));
 
 import User from './data/User';
 
 app.post('/login', async (req, res) => {
   const user = await User.verify(req.body.email, req.body.password);
   if (user) {
+    res.cookie('token', user.token, { httpOnly: true, signed: true });
     res.json(user);
   } else {
     res.status(401).send('Invalid username or password');
   }
 });
 
-app.get('*', async (req, res, next) => {
+app.get('*', cookieJwt.unless({ path: ['/login'] }), async (req, res, next) => {
   try {
     const Element = await asyncRouterMatch({ location: req.url, store });
     const template = require('./views/index.hbs'); // eslint-disable-line global-require
