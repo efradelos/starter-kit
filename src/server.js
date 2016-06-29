@@ -1,24 +1,34 @@
 // import _ from 'lodash';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import http from 'http';
 import express from 'express';
 import PrettyError from 'pretty-error';
 import path from 'path';
+import ReactDOM from 'react-dom/server';
 
-import { port, host, auth } from './config';
+import assets from './assets'; // eslint-disable-line import/no-unresolved
+import asyncRouterMatch from './lib/asyncRouterMatch';
+import { port, host } from './config';
 
 const app = express();
 const server = http.createServer(app);
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser({ secret: auth.cookies.secret }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-app.get('*', (req, res) => {
-  const template = require('./views/index.hbs'); // eslint-disable-line global-require
-  res.status(200).send(template({}));
+app.get('*', async (req, res, next) => {
+  try {
+    const Element = await asyncRouterMatch({ location: req.url });
+    const template = require('./views/index.hbs'); // eslint-disable-line global-require
+    const data = {
+      body: ReactDOM.renderToString(Element),
+      js: assets.main.js,
+    };
+    res.status(200).send(template(data));
+  } catch (error) {
+    next(error);
+  }
 });
 
 //
