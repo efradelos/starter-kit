@@ -1,3 +1,4 @@
+import { defaults } from 'lodash';
 import { CALL_API } from 'redux-api-middleware';
 import { host } from '../../config';
 
@@ -14,20 +15,21 @@ function localUrl(url) {
   return `http://${host}${url}`;
 }
 
-export function callApi(endpoint, event) {
+export default function callApi(endpoint, evt, options = {}) {
   return (dispatch, getState) => {
     const profile = getState().profile;
+    const base = {
+      endpoint: localUrl(endpoint),
+      method: 'GET',
+      headers: { Authorization: `Bearer ${profile.token}` },
+      types: [
+        evt,
+        `${evt}_SUCCESS`,
+        `${evt}_FAIL`,
+      ],
+    };
     return dispatch({
-      [CALL_API]: {
-        endpoint: localUrl(`/api/${endpoint}`),
-        method: 'GET',
-        headers: { Authorization: `Bearer ${profile.token}` },
-        types: [
-          event,
-          `${event}_SUCCESS`
-          `${event}_FAIL`,
-        ],
-      },
+      [CALL_API]: defaults(options, base),
     });
   };
 }

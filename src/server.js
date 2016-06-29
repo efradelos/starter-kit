@@ -21,6 +21,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(jwt.unless({ path: ['/login'] }));
 
+app.post('/login', (req, res) => {
+  res.json({ token: 'xyz' });
+});
+
 app.get('*', async (req, res, next) => {
   try {
     const Element = await asyncRouterMatch({ location: req.url, store });
