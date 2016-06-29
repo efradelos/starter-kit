@@ -21,7 +21,10 @@ export default function callApi(endpoint, evt, options = {}) {
     const base = {
       endpoint: localUrl(endpoint),
       method: 'GET',
-      headers: { Authorization: `Bearer ${profile.token}` },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${profile.token}`,
+      },
       types: [
         evt,
         `${evt}_SUCCESS`,

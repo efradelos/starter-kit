@@ -22,12 +22,12 @@
 // @import "components/roboto";
 @import "components/typography";
 @import "components/cards";
-// @import "components/toast";
+@import "components/toast";
 // @import "components/tabs";
 // @import "components/tooltip";
 @import "components/buttons";
 // @import "components/dropdown";
-// @import "components/waves";
+@import "components/waves";
 // @import "components/modal";
 // @import "components/collapsible";
 // @import "components/chips";
@@ -45,3 +45,14 @@
 html { height: 100%; }
 body { min-height: 100% }
 #app, .wrap { height: 100vh }
+
+.wrap {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+footer.page-footer { margin: 0; padding: 0; }

@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 if (process.env.BROWSER) require('./App.scss');
 
 import Nav from '../Nav';
+import Footer from '../Footer';
 
 class App extends Component {
   static propTypes = {
@@ -13,7 +14,10 @@ class App extends Component {
     return (
       <div className="wrap">
         <Nav />
-        {this.props.children}
+        <main className="valign-wrapper">
+          {React.Children.only(this.props.children)}
+        </main>
+        <Footer />
       </div>
     );
   }

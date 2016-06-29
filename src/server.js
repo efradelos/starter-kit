@@ -1,5 +1,5 @@
-// import _ from 'lodash';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import http from 'http';
 import express from 'express';
 import PrettyError from 'pretty-error';
@@ -17,12 +17,20 @@ const server = http.createServer(app);
 const store = configureStore();
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(jwt.unless({ path: ['/login'] }));
 
-app.post('/login', (req, res) => {
-  res.json({ token: 'xyz' });
+import User from './data/User';
+
+app.post('/login', async (req, res) => {
+  const user = await User.verify(req.body.email, req.body.password);
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(401).send('Invalid username or password');
+  }
 });
 
 app.get('*', async (req, res, next) => {
