@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import login from '../../redux/actions/login';
 
 class Login extends Component {
   static propTypes = {
@@ -11,10 +13,9 @@ class Login extends Component {
   }
 
   onLogin(e) {
-    this.props.onLogin(this.refs.email.value, this.refs.password.value);
     e.preventDefault();
+    this.props.onLogin(this.refs.email.value, this.refs.password.value);
   }
-
 
   render() {
     return (
@@ -23,6 +24,7 @@ class Login extends Component {
           <div className="z-depth-1">
             <form
               className="container"
+              onSubmit={this.onLogin}
               method="post"
             >
               <div className="input-field">
@@ -65,4 +67,14 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapStateToProps = (state) => ({ profile: state.profile });
+const mapDispatchToProps = (dispatch) => (
+  {
+    onLogin: async (email, password) => {
+      const r = await dispatch(login(email, password));
+      console.log(r);
+    },
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

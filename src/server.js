@@ -6,20 +6,24 @@ import PrettyError from 'pretty-error';
 import path from 'path';
 import ReactDOM from 'react-dom/server';
 
+import jwt from './config/jwt';
 import assets from './assets'; // eslint-disable-line import/no-unresolved
 import asyncRouterMatch from './lib/asyncRouterMatch';
 import { port, host } from './config';
+import configureStore from './redux/store/configureStore';
 
 const app = express();
 const server = http.createServer(app);
+const store = configureStore();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(jwt.unless({ path: ['/login'] }));
 
 app.get('*', async (req, res, next) => {
   try {
-    const Element = await asyncRouterMatch({ location: req.url });
+    const Element = await asyncRouterMatch({ location: req.url, store });
     const template = require('./views/index.hbs'); // eslint-disable-line global-require
     const data = {
       body: ReactDOM.renderToString(Element),

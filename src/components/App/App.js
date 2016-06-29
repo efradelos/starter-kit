@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 
 if (process.env.BROWSER) require('./App.scss');
 
+import Nav from '../Nav';
+
 class App extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
@@ -10,7 +12,7 @@ class App extends Component {
   render() {
     return (
       <div className="wrap">
-        <nav>Nav</nav>
+        <Nav />
         {this.props.children}
       </div>
     );

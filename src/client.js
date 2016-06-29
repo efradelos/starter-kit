@@ -1,15 +1,15 @@
 import ReactDOM from 'react-dom';
 
 import asyncRouterMatch from './lib/asyncRouterMatch';
+import configureStore from './redux/store/configureStore';
 import routes from './routes';
 
-const matchArgs = {
-  history: routes.props.history,
-  routes: routes.props.children,
-};
-
 async function route() {
-  const Element = await asyncRouterMatch(matchArgs);
+  const matchArgs = {
+    history: routes.props.history,
+    store: configureStore(window.__INITIAL_STATE__), //eslint-disable-line no-underscore-dangle
+  };
+  const Element = await asyncRouterMatch(matchArgs, true);
 
   ReactDOM.render(Element, document.getElementById('app'));
 }
