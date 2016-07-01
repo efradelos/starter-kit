@@ -39,18 +39,17 @@ app.put('/login', async (req, res) => {
 app.use('/api/*', headerJwt);
 
 import Post from './data/Post';
-import { groupBy, map, pick } from 'lodash';
+import Conversation from './data/Conversation';
 
-app.get('/api/posts', async (req, res) => {
-  const posts = await Post
-    .getJoin({ author: true })
-    .orderBy('created_at')
-    .map((post) => post.merge({ unread: post('read_by').contains(req.user.id).not() }))
-    .without('read_by')
-    .run();
+import { pick } from 'lodash';
 
-  const conversations = groupBy(posts, 'conversation_id');
-  res.json(map(conversations, (ps, key) => ({ id: key, posts: ps })));
+app.get('/api/posts', async (req, res, next) => {
+  try {
+    const conversations = await Conversation.forUser(req.user);
+    res.json(conversations);
+  } catch (e) {
+    next(e);
+  }
 });
 
 app.put('/api/posts', async (req, res, next) => {
