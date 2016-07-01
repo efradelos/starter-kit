@@ -1,5 +1,6 @@
 import { defaults } from 'lodash';
 import { CALL_API } from 'redux-api-middleware';
+// TODO: Can't have config available in client!!!
 import { host } from '../../config';
 
 function localUrl(url) {

@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 
-if (process.env.BROWSER) require('./App.scss');
+import s from './App.scss';
 
 import Nav from '../Nav';
 import Footer from '../Footer';
 
+// TODO: Set Title!
+@withStyles(s)
 class App extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,

@@ -61,31 +61,14 @@ const config = {
               'transform-react-constant-elements',
               'transform-react-inline-elements',
             ],
+            'babel-plugin-transform-decorators-legacy',
           ],
         },
       },
       {
-        test: /\.css/,
-        loaders: [
-          'isomorphic-style-loader',
-          `css-loader?${JSON.stringify({
-            sourceMap: DEBUG,
-            // CSS Modules https://github.com/css-modules/css-modules
-            modules: true,
-            localIdentName: DEBUG ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
-            // CSS Nano http://cssnano.co/options/
-            minimize: !DEBUG,
-          })}`,
-        ],
-      },
-      // {
-      //   test: /Login\.scss$/,
-      //   loader: ExtractTextPlugin.extract(['style', 'css', 'sass']),
-      // },
-      {
         test: /\.scss$/,
         loaders: [
-          'style-loader',
+          'isomorphic-style-loader',
           `css-loader?${JSON.stringify({ sourceMap: DEBUG, minimize: !DEBUG })}`,
           'sass-loader',
         ],

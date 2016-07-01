@@ -6,7 +6,7 @@ export const LOGIN_FAIL = 'LOGIN_FAIL';
 
 export default function login(email, password) {
   return callApi('/login', LOGIN, {
-    method: 'POST',
+    method: 'PUT',
     credentials: 'same-origin',
     body: JSON.stringify({ email, password }),
   });

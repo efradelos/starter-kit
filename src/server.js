@@ -14,17 +14,19 @@ import configureStore from './redux/store/configureStore';
 
 const app = express();
 const server = http.createServer(app);
-const store = configureStore();
 
 app.use(express.static(path.join(__dirname, 'public')));
-// TODO: Add a cookie secret
 app.use(cookieParser(auth.cookies.secret));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 import User from './data/User';
 
-app.post('/login', async (req, res) => {
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/');
+});
+
+app.put('/login', async (req, res) => {
   const user = await User.verify(req.body.email, req.body.password);
   if (user) {
     res.cookie('token', user.token, { httpOnly: true, signed: true });
@@ -34,13 +36,49 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.use('/api/*', headerJwt);
+
+import Post from './data/Post';
+import { groupBy, map, pick } from 'lodash';
+
+app.get('/api/posts', async (req, res) => {
+  const posts = await Post
+    .getJoin({ author: true })
+    .orderBy('created_at')
+    .map((post) => post.merge({ unread: post('read_by').contains(req.user.id).not() }))
+    .without('read_by')
+    .run();
+
+  const conversations = groupBy(posts, 'conversation_id');
+  res.json(map(conversations, (ps, key) => ({ id: key, posts: ps })));
+});
+
+app.put('/api/posts', async (req, res, next) => {
+  try {
+    const postAttrs = pick(req.body, 'conversation_id', 'content');
+    const authorId = req.body.author.id;
+    const post = new Post(postAttrs);
+    post.author = await User.get(authorId);
+    post.read_by = [authorId];
+    res.json(await post.saveAll());
+  } catch (e) {
+    next(e);
+  }
+});
+
 app.get('*', cookieJwt.unless({ path: ['/login'] }), async (req, res, next) => {
   try {
-    const Element = await asyncRouterMatch({ location: req.url, store });
+    const css = [];
+    // eslint-disable-next-line no-underscore-dangle
+    const context = { insertCss: (styles) => css.push(styles._getCss()) };
+    const store = configureStore({ profile: req.user ? await User.get(req.user.id) : {} });
+    const Element = await asyncRouterMatch({ location: req.url, store, context });
     const template = require('./views/index.hbs'); // eslint-disable-line global-require
     const data = {
       body: ReactDOM.renderToString(Element),
       js: assets.main.js,
+      css: css.join(''),
+      state: JSON.stringify(store.getState()),
     };
     res.status(200).send(template(data));
   } catch (error) {

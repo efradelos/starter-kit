@@ -1,0 +1,9 @@
+.conversations {
+  .col { position: relative }
+}
+.conversation {
+  .card-content { padding: 5px }
+  .card-action { padding: 10px 0 }
+  a.view-responses { font-size: 12px }
+  &.expanded { margin: 15px -15px; }
+}

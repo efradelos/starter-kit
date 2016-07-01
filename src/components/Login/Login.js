@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 
 // TODO: Figure out how to use webpack for styles
-if (process.env.BROWSER) require('./Login.scss');
+import s from './Login.scss';
 
-import login from '../../redux/actions/login';
+import login, { LOGIN_SUCCESS } from '../../redux/actions/login';
 
+@withStyles(s)
 class Login extends Component {
   static propTypes = {
     onLogin: PropTypes.func.isRequired,
@@ -76,8 +79,16 @@ class Login extends Component {
 const mapStateToProps = (state) => ({ profile: state.profile });
 const mapDispatchToProps = (dispatch) => (
   {
-    onLogin: (email, password) => dispatch(login(email, password)),
+    onLogin: async (email, password) => {
+      const action = await dispatch(login(email, password));
+      if (action.type === LOGIN_SUCCESS) {
+        browserHistory.push('/');
+      }
+    },
   }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);

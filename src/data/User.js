@@ -1,4 +1,4 @@
-import { head } from 'lodash';
+import { head, pick } from 'lodash';
 import bcrypt from 'bcrypt';
 import Promise from 'bluebird';
 import jsonwebtoken from 'jsonwebtoken';
@@ -19,7 +19,8 @@ const User = thinky.createModel('users', {
   first_name: type.string().optional(),
   last_name: type.string().optional(),
   token: type.virtual().default(function token() {
-    return jsonwebtoken.sign({ email: this.email }, auth.jwt.secret);
+    // TODO: Set Expiration on token
+    return jsonwebtoken.sign(pick(this, 'id', 'email', 'first_name', 'last_name'), auth.jwt.secret);
   }),
 });
 
